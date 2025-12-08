@@ -74,6 +74,8 @@ This project has been tested and configured for:
 
 **Important:** The DRV8825 can get HOT. Consider adding a heatsink if running continuously at high current.
 
+**CRITICAL - Common Ground:** All components MUST share a common ground. If using multiple power supplies (e.g., separate 5V for Arduino and 12V for motor), ensure all grounds are connected together. Without common ground, the motor may energize but not step.
+
 ### DRV8825 Current Limiting Setup (CRITICAL!)
 
 **You MUST set the current limit on the DRV8825 before powering the motor.** Failure to do so can damage the motor or driver.
@@ -226,13 +228,22 @@ Pot: 256 | Target: 800 | Current: 802
 
 ## Troubleshooting
 
-### Motor doesn't move
+### Motor doesn't move at all
 - **Check DRV8825 current limit** - Must be set before motor will work properly
 - Verify all wiring connections (especially SLEEP and RESET tied together or to 5V)
 - Ensure 12V battery is charged and providing adequate voltage
 - Check that ENABLE pin is LOW (sketch sets this automatically)
 - Verify M0, M1, M2 pins are HIGH for 1/32 microstepping
 - Measure VDD on DRV8825 should be 5V
+
+### Motor whirs/vibrates but doesn't turn
+- **MOST COMMON:** Missing common ground between power supplies
+  - If using separate 5V and 12V supplies, ALL grounds must be connected together
+  - Arduino GND, DRV8825 GND, and all power supply grounds must be common
+  - Without common ground, control signals don't work properly
+- **Current too low** - Increase Vref on DRV8825 (try 0.6-0.7V)
+- **Speed too high** - Motor can't keep up, reduce MAX_SPEED to 400 for testing
+- Motor shaft has mechanical resistance - check coupling/mounting
 
 ### Motor jitters or stutters
 - **Current too low** - Increase Vref on DRV8825 slightly (don't exceed 0.8V)
